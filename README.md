@@ -81,6 +81,7 @@ By default, **GPIO 4** is allocated for **OneWire communication**.
 
 ### **Wiring Diagram (ESP32 + Temperature Probe + Battery)**
 ![Wiring Diagram](additional_assets/WireDiagram_Client_Temp.jpg)
+The code uses the OneWire library supporting multiple DS18B20 on the GPIO data pin. However, multiple temperatures (e.g. ambient, beer, etc) are just mocked and not yet implemented.
 
 ### **Actual Device Setup**
 ![Device Picture](additional_asset/device_picture.png)
@@ -120,11 +121,6 @@ If you find this project useful, please **star the repository ⭐, follow [my Gi
 ## 📜 License
 This project is licensed under the **Apache 2.0 License** – see the [LICENSE](LICENSE) file for details.
 
----
-
-## 🎖️ Credits & External Libraries
-This project wouldnt be possible without the help of other developers, making tools I utilized. For this this project, I used the **OneWire Library**, which was cloned and adapted from:
-- **OneWire Library**: [https://github.com/PaulStoffregen/OneWire](https://github.com/PaulStoffregen/OneWire)
 
 ---
 
@@ -149,6 +145,12 @@ As well as our website & online tools, such as
 
 ---
 
+## 🎖️ Credits & External Libraries
+This project wouldnt be possible without the help of other developers, making tools I utilized. For this this project, I used the **OneWire Library**, which was cloned and adapted from:
+- **OneWire Library**: [https://github.com/PaulStoffregen/OneWire](https://github.com/PaulStoffregen/OneWire)
+
+---
+
  
-# 🚀 Happy Brewing with Cheers! 🍻
+# 🚀 Happy Brewing & Cheers! 🍻
 
