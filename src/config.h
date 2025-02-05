@@ -1,26 +1,28 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// WiFi credentials
-// #define WIFI_SSID       "yourSSID"
-// #define WIFI_PASSWORD   "yourPASSWORD"
-#define WIFI_SSID       "VM7498479"
-#define WIFI_PASSWORD   "skdAf2pN6vpyygas"
+// Wireless Transmission Type
+#define TRANSMISSION_TYPE        "wifi"     // TODO: Add support for BT (and Zigbee?)
+// Transmission Interval in Seconds
+#define INTERVAL_LENGTH          30         // Interval between transmissions in sec
 
-// Device and component configuration
+// TO DO FOR USERS
+// --> in mqtt_handler.cpp -> update the time stamp correction for your timezone +/- GMT
+
+
+// <--- W I F I   C O N F I G U R A T I O N --->
+#define WIFI_SSID       "yourSSID"          // Replace with your SSID
+#define WIFI_PASSWORD   "yourPASSWORD"      // Replace with your WiFi password
+
+
+// <--- M Q T T   S E T U P   &   S T R U C T U R E --->
+
+#define MQTT_BROKER              "your.host.ip"     // Replace with your broker IP/hostname
+#define MQTT_PORT                1883               // Default MQTT port; change if needed
+
 #define LOGIC_BREWERY_COMPONENT  "fermenter"
 #define DEVICE_TYPE              "temperature_sensor"
-// #define DEVICE_ID                "A1B2C3"
-#define DEVICE_ID                "1A2B3C"
+#define DEVICE_ID                "1A2B3C"           // Replace with your device ID; Reocmmended: Random 6-digit hex
 
-#define TRANSMISSION_TYPE        "wifi"     // TODO: Add support for BT (and Zigbee?)
-
-// Transmission interval in seconds
-#define INTERVAL_LENGTH          1         // Interval between transmissions in sec
-
-// MQTT Broker configuration
-// #define MQTT_BROKER              "your.host.ip"  // Replace with your broker IP/hostname
-#define MQTT_BROKER              "192.168.0.209" 
-#define MQTT_PORT                1883           // Default MQTT port
 
 #endif

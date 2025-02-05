@@ -5,6 +5,6 @@
 
 void setupTemperatureSensor();
 float readBrewTemperature();
-bool isSensorConnected();  // Declare isSensorConnected() to fix the missing function error
+bool isSensorConnected();  
 
 #endif

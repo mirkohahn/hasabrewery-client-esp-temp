@@ -1,49 +1,38 @@
-<<<<<<< HEAD
-# Prerequisites
-*.d
+# Ignore PlatformIO build output
+.pio/
+build/
+libdeps/
 
-# Object files
+# Ignore VS Code settings and workspace data
+.vscode/
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
+
+# Ignore compiled binary files
+*.d
 *.o
 *.ko
 *.obj
 *.elf
+*.bin
+*.hex
 
-# Linker output
+# Ignore Linker and Debug files
 *.ilk
 *.map
 *.exp
+*.idb
+*.pdb
+*.dSYM/
+*.su
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
+# Ignore Library build artifacts
 *.lib
 *.a
 *.la
 *.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
 *.mod*
 *.cmd
 .tmp_versions/
@@ -51,10 +40,24 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-=======
-.pio
-.vscode/.browse.c_cpp.db*
-.vscode/c_cpp_properties.json
-.vscode/launch.json
-.vscode/ipch
->>>>>>> 839eada (initial commit from VS Code with V0.7)
+
+# Ignore shared objects (Linux & Mac)
+*.so
+*.so.*
+*.dylib
+
+# Ignore Windows executables
+*.dll
+*.exe
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Ignore Arduino/PlatformIO metadata
+.arduino/
+.platformio/

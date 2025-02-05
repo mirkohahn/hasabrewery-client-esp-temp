@@ -1,9 +1,9 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <time.h>  // Include time library
+#include <time.h>  
 #include "config.h"
 #include "mqtt_handler.h"
-#include "temperature_sensor.h"  // Ensure this is included
+#include "temperature_sensor.h"
 
 // Global WiFi and MQTT client
 WiFiClient espClient;
@@ -11,12 +11,13 @@ PubSubClient client(espClient);
 
 // NTP time settings
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;  // Adjust for your timezone
-const int   daylightOffset_sec = 0;
+const long  gmtOffset_sec = 0;              // ADJUST in SECONDS! for our timezone
+const int   daylightOffset_sec = 0;         // ADJUST in SECONDS! for our daylight saving time
 
 // Function to get WiFi Signal Strength (RSSI)
 int getWiFiRSSI() {
     return WiFi.RSSI();  // Returns signal strength in dBm
+    // -30 dBm: Amazing, -67 dBm: Very Good, -70 dBm: Okay, -80 dBm: Not Good, -90 dBm: Unusable
 }
 
 // Function to get formatted timestamp
