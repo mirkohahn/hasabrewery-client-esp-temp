@@ -1,5 +1,5 @@
 # Ignore CONFIG File
-/src/config.h
+# /src/config.h
 
 # Ignore PlatformIO build output
 .pio/

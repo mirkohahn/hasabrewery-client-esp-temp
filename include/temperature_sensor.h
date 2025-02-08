@@ -5,6 +5,7 @@
 
 void setupTemperatureSensor();
 float readBrewTemperature();
-bool isSensorConnected();  
+float readAmbientTemperature();
+bool isSensorConnected();
 
 #endif

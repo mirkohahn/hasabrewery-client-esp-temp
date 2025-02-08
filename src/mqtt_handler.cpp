@@ -11,7 +11,7 @@ PubSubClient client(espClient);
 
 // NTP time settings
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;              // ADJUST in SECONDS! for our timezone
+const long  gmtOffset_sec = 0;              // ADJUST in SECONDS! for our timezone -> e.g. +1h for CET = 3600
 const int   daylightOffset_sec = 0;         // ADJUST in SECONDS! for our daylight saving time
 
 // Function to get WiFi Signal Strength (RSSI)
@@ -34,7 +34,7 @@ String getFormattedTimestamp() {
     return String(formattedTime);
 }
 
-// Initialize NTP
+// Initialize NTP - Network Time Protocoll
 void setupTime() {
     Serial.println("⏳ Syncing time via NTP...");
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
@@ -71,41 +71,39 @@ void mqttLoop() {
 }
 
 // Publish temperature data to MQTT with enhanced status
-void publishTemperature(float brewTemp) {
+void publishTemperature(float brewTemp, float ambientTemp) {
+    Serial.println("🛠 DEBUG: Inside publishTemperature()");
+    
+    Serial.print("🚀 Sending Brew Temp: ");
+    Serial.println(brewTemp);
+
+    Serial.print("🚀 Sending Ambient Temp: ");
+    Serial.println(ambientTemp);
+
     char topic[128];
     snprintf(topic, sizeof(topic), "receive/%s/%s/%s",
              LOGIC_BREWERY_COMPONENT, DEVICE_TYPE, DEVICE_ID);
 
     String timestamp = getFormattedTimestamp();
-    int wifiRSSI = getWiFiRSSI();  // Get WiFi signal strength
+    int wifiRSSI = getWiFiRSSI();  
 
-    // Handle sensor errors
-    String statusMessage;
-    String temperatureStr;
-
-    if (!isSensorConnected()) {
-        statusMessage = "ERROR: No DS18B20 detected";
-        temperatureStr = "null";
-    } else if (brewTemp == -127.00) {
-        statusMessage = "ERROR: Sensor read failure";
-        temperatureStr = "null";
-    } else {
-        statusMessage = "OK";
-        temperatureStr = String(brewTemp, 2);
-    }
-
-    // Construct JSON payload with expanded status information
-    char payload[512];  // Increased buffer size for larger JSON
+    // Construct JSON payload
+    char payload[512];  
     snprintf(payload, sizeof(payload),
-             "{\"timestamp\": \"%s\", \"temp_ambient\": null, \"temp_brew\": %s, \"status\": {\"status_message\": \"%s\", \"transmission_type\": \"%s\", \"RSSI\": %d}}",
-             timestamp.c_str(), temperatureStr.c_str(), statusMessage.c_str(), TRANSMISSION_TYPE, wifiRSSI);
+             "{\"timestamp\": \"%s\", \"temp_ambient\": %s, \"temp_brew\": %s, \"status\": {\"status_message\": \"%s\", \"transmission_type\": \"%s\", \"RSSI\": %d}}",
+             timestamp.c_str(), (ambientTemp == -127.00) ? "null" : String(ambientTemp, 2).c_str(),
+             (brewTemp == -127.00) ? "null" : String(brewTemp, 2).c_str(),
+             "OK", TRANSMISSION_TYPE, wifiRSSI);
+
+    Serial.print("📡 MQTT Payload: ");
+    Serial.println(payload);
 
     if (client.publish(topic, payload)) {
-        Serial.print("📡 Published to topic ");
-        Serial.print(topic);
-        Serial.print(": ");
-        Serial.println(payload);
+        Serial.println("✅ MQTT Publish Success!");
     } else {
-        Serial.println("❌ Failed to publish MQTT message");
+        Serial.println("❌ Failed to publish MQTT message.");
     }
 }
+
+
+

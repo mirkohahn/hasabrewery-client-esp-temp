@@ -5,6 +5,6 @@
 
 void mqttInit();
 void mqttLoop();
-void publishTemperature(float brewTemp);
+void publishTemperature(float brewTemp, float ambientTemp);
 void reconnect();  
 #endif

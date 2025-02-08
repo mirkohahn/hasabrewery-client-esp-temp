@@ -4,16 +4,19 @@
 [![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)
 
 **HasABrewery ESP32 Client** is an IoT-driven temperature monitoring system tailored for ambitious home brewers and small breweries. Built for **ESP32**, it enables real-time temperature logging using **DS18B20 sensors** and seamless integration with **MQTT**. It supports **both static power supply and battery operation**, ensuring uninterrupted monitoring.
+Now with integrated deep_sleep you can measure your fermentation's temperature for even longer without worrying about battery levels - too easy, lads! 
 - 📊 **Web dashboard** for real-time monitoring.
 
 ## 📌 Features
 
+- ✅ **Supporting °F & °C**: Configure using imperial or metric units with a simple click.
 - ✅ **Smart WiFi AP Selection**: Automatically connects to the strongest access point.
 - ✅ **MQTT-Powered**: Publishes real-time temperature data to a broker.
 - ✅ **Precision Monitoring**: Uses **DS18B20 sensors** for accurate readings.
 - ✅ **Optimized for PlatformIO**: Easy flashing and configuration.
 - ✅ **Supports Static & Battery Power**: Works seamlessly with both power sources.
-
+- ✅ **Multi-sensor support** for multiple DS18B20 probes including ambient temperature.
+- ✅ **Battery optimization** to extend operational runtime.
 ---
 
 ## 📦 Installation
@@ -89,8 +92,6 @@ The code uses the OneWire library supporting multiple DS18B20 on the GPIO data p
 ---
 
 ## 🔮 Upcoming Features
-- 🌡️ **Multi-sensor support** for multiple DS18B20 probes including ambient temperature.
-- 🔋 **Battery optimization** to extend operational runtime.
 - 📦 **OTA updates** for seamless firmware upgrades.
 
 ---
