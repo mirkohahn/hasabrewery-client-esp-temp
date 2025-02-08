@@ -14,16 +14,13 @@
 #define IMPERIAL_UNITS false                 // Set to true for °F, false for °C
 
 // <--- W I F I   C O N F I G U R A T I O N --->
-// #define WIFI_SSID       "yourSSID"          // Replace with your SSID
-// #define WIFI_PASSWORD   "yourPASSWORD"      // Replace with your WiFi password
-#define WIFI_SSID       "VM7498479"
-#define WIFI_PASSWORD   "skdAf2pN6vpyygas"
+#define WIFI_SSID       "yourSSID"          // Replace with your SSID
+#define WIFI_PASSWORD   "yourPASSWORD"      // Replace with your WiFi password
 
 
 
 // <--- M Q T T   S E T U P   &   S T R U C T U R E --->
-#define MQTT_BROKER              "192.168.0.209" 
-// #define MQTT_BROKER              "your.host.ip"     // Replace with your broker IP/hostname
+#define MQTT_BROKER              "your.host.ip"     // Replace with your broker IP/hostname
 #define MQTT_PORT                1883               // Default MQTT port; change if needed
 
 #define LOGIC_BREWERY_COMPONENT  "fermenter"
@@ -32,7 +29,3 @@
 
 
 #endif
-
-// #define WIFI_SSID       "VM7498479"
-// #define WIFI_PASSWORD   "skdAf2pN6vpyygas"
-// #define MQTT_BROKER              "192.168.0.209" 
