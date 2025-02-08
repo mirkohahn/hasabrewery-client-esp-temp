@@ -1,11 +1,12 @@
 # 🚀 HasABrewery ESP32 Client
 
+[![Version](https://img.shields.io/badge/version-1.0.1-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  
 [![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)
 
 **HasABrewery ESP32 Client** is an IoT-driven temperature monitoring system tailored for ambitious home brewers and small breweries. Built for **ESP32**, it enables real-time temperature logging using **DS18B20 sensors** and seamless integration with **MQTT**. It supports **both static power supply and battery operation**, ensuring uninterrupted monitoring.
 Now with integrated deep_sleep you can measure your fermentation's temperature for even longer without worrying about battery levels - too easy, lads! 
-- 📊 **Web dashboard** for real-time monitoring.
+- 📊 Click Here [**Web dashboard**](https://github.com/mirkohahn/hasabrewery-host) for real-time monitoring MQTT dashboard.
 
 ## 📌 Features
 
@@ -129,9 +130,9 @@ This project is licensed under the **Apache 2.0 License** – see the [LICENSE](
 If you like to learn more about **Has A Brewery**, the project and resources, checkout other HasABrewery repositories:
 | Name | Description |
 |------|------------|
-| [Brewery Data Strucutre](https://github.com/mirkohahn/brew_data_structure) | Official website with product details and updates. |
 | [Has A Brewery Local Host](https://github.com/mirkohahn/hasabrewery-host) | Cloud backend for data storage and real-time analytics. |
-| [Fermentation Chamber Controller](https://github.com/mirkohahn/hasabrewery-fermentation-chamber) | Coming Soon... |
+| [Brewery Data Strucutre](https://github.com/mirkohahn/brew_data_structure) | Official website with product details and updates. |
+| [Fermentation Chamber Controller](https://github.com/mirkohahn/hasabrewery-fermentation-chamber) | Full Controller for Fermentation & Conditioning Chamber |
 | [Keezer / Kegerator Controller](https://github.com/mirkohahn/hasabrewery-keezer-controller) | Coming Soon... |
 
 As well as our website & online tools, such as
