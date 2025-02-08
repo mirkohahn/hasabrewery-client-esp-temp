@@ -4,8 +4,12 @@
 #include "config.h"
 #include "mqtt_handler.h"
 #include "temperature_sensor.h"
+#include "esp_sleep.h"
 
-void setup() {
+RTC_DATA_ATTR int bootCount = 0; // Retains count across deep sleep cycles
+
+void setup()
+{
     Serial.begin(115200);
     delay(100);
 
@@ -15,7 +19,8 @@ void setup() {
     Serial.println(WIFI_SSID);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         delay(500);
         Serial.print(".");
     }
@@ -25,7 +30,7 @@ void setup() {
     Serial.println(WiFi.localIP());
 
     // Sync time using NTP
-    setupTime();  // Now this function is properly declared
+    setupTime(); // Now this function is properly declared
 
     // Initialize MQTT
     mqttInit();
@@ -34,14 +39,15 @@ void setup() {
     setupTemperatureSensor();
 }
 
-
 unsigned long previousMillis = 0;
 
-void loop() {
+void loop()
+{
     mqttLoop();
 
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= INTERVAL_LENGTH * 1000UL) {
+    if (currentMillis - previousMillis >= INTERVAL_LENGTH * 1000UL)
+    {
         previousMillis = currentMillis;
 
         // Read real temperature from the brew sensor
@@ -53,5 +59,9 @@ void loop() {
 
         // Publish brew temperature, setting ambient temp to null
         publishTemperature(brewTemp);
+
+        esp_sleep_enable_timer_wakeup(INTERVAL_LENGTH * 1000000ULL);
+        Serial.println("Deep Sleep Timer Set - Goodnight!");
+        esp_deep_sleep_start();
     }
 }
