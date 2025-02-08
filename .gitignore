@@ -64,4 +64,3 @@ dkms.conf
 # Ignore Arduino/PlatformIO metadata
 .arduino/
 .platformio/
-src/config.h
