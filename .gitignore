@@ -1,5 +1,5 @@
 # Ignore CONFIG File
-/src/config.h
+src/config.h
 
 # Ignore PlatformIO build output
 .pio/
@@ -64,3 +64,4 @@ dkms.conf
 # Ignore Arduino/PlatformIO metadata
 .arduino/
 .platformio/
+
