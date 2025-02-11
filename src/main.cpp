@@ -24,28 +24,35 @@ void connectToStrongestWiFi() {
 
     int bestNetworkIndex = -1;
     int bestRSSI = -100; // Start with the lowest possible signal strength
+    uint8_t bestBSSID[6]; // Store the BSSID of the strongest AP
+    int bestChannel = 0;
 
-    // Find the strongest network that matches a known SSID
+    // Find the strongest network that matches our predefined SSID
     for (int i = 0; i < numNetworks; i++) {
         String detectedSSID = WiFi.SSID(i);
         int signalStrength = WiFi.RSSI(i);
 
-        Serial.printf("📡 Found: %s (RSSI: %d dBm)\n", detectedSSID.c_str(), signalStrength);
+        Serial.printf("📡 Found: %s (RSSI: %d dBm, Channel: %d)\n", 
+                      detectedSSID.c_str(), signalStrength, WiFi.channel(i));
 
         // Check if the detected network matches our predefined SSID
         if (detectedSSID == WIFI_SSID && signalStrength > bestRSSI) {
             bestRSSI = signalStrength;
             bestNetworkIndex = i;
+            memcpy(bestBSSID, WiFi.BSSID(i), sizeof(bestBSSID));
+            bestChannel = WiFi.channel(i);
         }
     }
 
-    // Connect to the best available network
+    // Connect to the best available AP
     if (bestNetworkIndex != -1) {
-        Serial.printf("✅ Connecting to best WiFi: %s (RSSI: %d dBm)...\n", WiFi.SSID(bestNetworkIndex).c_str(), bestRSSI);
-        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+        Serial.printf("✅ Connecting to strongest WiFi AP: %s (RSSI: %d dBm, Channel: %d)...\n", 
+                      WiFi.SSID(bestNetworkIndex).c_str(), bestRSSI, bestChannel);
+
+        WiFi.begin(WIFI_SSID, WIFI_PASSWORD, bestChannel, bestBSSID, true);
 
         int attempt = 0;
-        while (WiFi.status() != WL_CONNECTED && attempt < 10) { // Limit attempts
+        while (WiFi.status() != WL_CONNECTED && attempt < 15) { // Increase attempts to 15 for better stability
             delay(500);
             Serial.print(".");
             attempt++;
@@ -55,6 +62,14 @@ void connectToStrongestWiFi() {
             Serial.println("\n✅ WiFi connected!");
             Serial.print("📡 IP Address: ");
             Serial.println(WiFi.localIP());
+
+            Serial.print("🛰️ Connected BSSID: ");
+            Serial.printf("%02X:%02X:%02X:%02X:%02X:%02X\n",
+                          bestBSSID[0], bestBSSID[1], bestBSSID[2],
+                          bestBSSID[3], bestBSSID[4], bestBSSID[5]);
+
+            WiFi.setAutoReconnect(true);  // Ensure it reconnects if disconnected
+            WiFi.setSleep(false);         // Disable WiFi sleep for stable connection
         } else {
             Serial.println("\n❌ WiFi connection failed!");
         }
@@ -63,6 +78,7 @@ void connectToStrongestWiFi() {
         WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     }
 }
+
 
 void setup()
 {
@@ -89,7 +105,7 @@ void loop()
     mqttLoop();
 
     unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= INTERVAL_LENGTH * 1000UL)
+    if (currentMillis - previousMillis >= 1 * 1000UL)
     {
         previousMillis = currentMillis;
 

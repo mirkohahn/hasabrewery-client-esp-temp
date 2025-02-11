@@ -87,11 +87,12 @@ void publishTemperature(float brewTemp, float ambientTemp) {
     String timestamp = getFormattedTimestamp();
     int wifiRSSI = getWiFiRSSI();  
 
-    // Construct JSON payload
+    // Construct JSON payload with "values" array
     char payload[512];  
     snprintf(payload, sizeof(payload),
-             "{\"timestamp\": \"%s\", \"temp_ambient\": %s, \"temp_brew\": %s, \"status\": {\"status_message\": \"%s\", \"transmission_type\": \"%s\", \"RSSI\": %d}}",
-             timestamp.c_str(), (ambientTemp == -127.00) ? "null" : String(ambientTemp, 2).c_str(),
+             "{\"timestamp\": \"%s\", \"values\": [{\"temp_ambient\": %s}, {\"temp_brew\": %s}], \"status\": {\"status_message\": \"%s\", \"transmission_type\": \"%s\", \"RSSI\": %d}}",
+             timestamp.c_str(), 
+             (ambientTemp == -127.00) ? "null" : String(ambientTemp, 2).c_str(),
              (brewTemp == -127.00) ? "null" : String(brewTemp, 2).c_str(),
              "OK", TRANSMISSION_TYPE, wifiRSSI);
 
@@ -104,6 +105,7 @@ void publishTemperature(float brewTemp, float ambientTemp) {
         Serial.println("❌ Failed to publish MQTT message.");
     }
 }
+
 
 
 
