@@ -1,6 +1,6 @@
 # 🚀 HasABrewery ESP32 Client
 
-[![Version](https://img.shields.io/badge/version-1.0.1-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-1.0.2-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  
 [![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)
 
