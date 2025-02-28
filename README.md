@@ -2,9 +2,15 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.2-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  
-[![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)
+[![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)\
+[![Platform](https://img.shields.io/badge/platform-Arduino_IDE-blue?logo=arduino)](https://www.arduino.cc/en/software)
+[![Platform](https://img.shields.io/badge/platform-PlatformIO-black?logo=platformio)](https://platformio.org/)
 
-**HasABrewery ESP32 Client** is an IoT-driven temperature monitoring system tailored for ambitious home brewers and small breweries. Built for **ESP32**, it enables real-time temperature logging using **DS18B20 sensors** and seamless integration with **MQTT**. It supports **both static power supply and battery operation**, ensuring uninterrupted monitoring.
+
+
+
+**HasABrewery ESP32 Client** is an IoT-driven temperature monitoring system tailored for ambitious home brewers and small breweries. Built for **ESP32**, it enables real-time temperature logging using **DS18B20 sensors** and seamless integration with **MQTT**. It supports **both static power supply and battery operation**, ensuring uninterrupted monitoring.\
+Now able to flash directly thru Arduino IDE or as usually thru Platform IO and VS Code\
 Now with integrated deep_sleep you can measure your fermentation's temperature for even longer without worrying about battery levels - too easy, lads! 
 - 📊 Click Here [**Web dashboard**](https://github.com/mirkohahn/hasabrewery-host) for real-time monitoring MQTT dashboard.
 
@@ -18,9 +24,35 @@ Now with integrated deep_sleep you can measure your fermentation's temperature f
 - ✅ **Supports Static & Battery Power**: Works seamlessly with both power sources.
 - ✅ **Multi-sensor support** for multiple DS18B20 probes including ambient temperature.
 - ✅ **Battery optimization** to extend operational runtime.
----
 
-## 📦 Installation
+\
+Click here to install using the [Arduino IDE](#-installation---arduino-ide) and here for [VS Code & Platform IO](#-installation---vs-code--platform-io)
+
+The current build version for an ESP32 C3 has
+````
+RAM:   [=         ]  14.1% (used 46296 bytes from 327680 bytes)
+Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
+````
+
+## Table of Contents
+- [Installation on VS Code & Platform IO](#-installation---vs-code--platform-io) | [Installation using Arduino IDE](#-installation---arduino-ide)
+- [Project Structure](#️project-structure)
+- [Wiring & Hardware](#configuration)
+- [Upcoming Features](#changelog) | [Contribution](#license) | [Support the Project](#license) | [License](#license)
+- [Has A Brewery EcoSystem](#license)
+
+
+## Changelog
+| Version | Date       | Description               |
+|---------|------------|---------------------------|
+| 1.0.3   | 2025-02-27 | Added Arduino files; now flashable thru Arduino IDE            |
+| 1.0.2   | 2025-02-11 | Small bug fixes and updates       |
+| 1.0.1   | 2025-02-08 | Added Ambient Temperature, Deep Sleep Mode and Imperial Units     |
+| 1.0.0   | 2025-02-05 | Working V1 Version;      |
+
+
+
+## 📦 (1/2) Installation - VS Code & Platform IO
 
 ### **1️⃣ Prerequisites**
 
@@ -48,6 +80,45 @@ and much more. You can choose and customize the topic under which the messages a
   ```sh
   pio run --target upload
   ```
+
+
+## 📦 (2/2) Installation - Arduino IDE
+
+### **1️⃣ Prerequisites**
+- Install ESP32 Board Package to Arduino IDE
+   -> `File` > `Preferences` 
+  then add the following URL to `Additional Board Manager URLs`
+```
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+```
+- Go to `Tools` > `Board` > `Board Manager`
+  Search for **ESP32** and install lates Espressif ESP32 package
+- Install required libraries
+   go to `Sketch` > `Include Library` > `Manage Libraries` search and install: `PubSubClient` (needed for MQTT messages)
+
+### **2️⃣ Configure your IDE**
+- Board:            ESP32C3 Dev Module
+- Upload Speed:     115200
+- Flash Mode:       QIO
+- Port:             (Select the COM port shown for ESP32C3)
+- CPU Frequency:    160MHz
+- Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)
+
+
+### **3️⃣ Configure WiFi & MQTT**
+Easily modify `src/config.h` to include your personal credentials and configurations:
+  ```cpp
+  #define WIFI_SSID "YourWiFiSSID"
+  #define WIFI_PASSWORD "YourWiFiPassword"
+  #define MQTT_BROKER "your.mqtt.host-address"
+  #define MQTT_PORT 1883
+  ```
+
+and much more. You can choose and customize the topic under which the messages are send all from config.h
+
+### **4️⃣ Flash to ESP32**
+- select your board from `Tools` > `Board` > `eps32` > Select Your Board 
+- click **Upload**
 
 ---
 
@@ -79,20 +150,29 @@ and much more. You can choose and customize the topic under which the messages a
 
 ## 🖼️ Wiring & Hardware
 
-### **Pinout Diagram**
-![PinOut Diagram](additional_assets/pinout_diagram.png)  
+### **Pinout Diagrams ESP32 C3 SuperMini and WROOM**
+![PinOut Diagram ESP32 C3 SuperMini](additional_assets/pinout_diagram_c3supermini.jpg)  
 By default, **GPIO 4** is allocated for **OneWire communication**.
+
+![PinOut Diagram ESP32 WROOM](additional_assets/pinout_diagram.png)  
+By default, **GPIO 4** is allocated for **OneWire communication**.
+
 
 ### **Wiring Diagram (ESP32 + Temperature Probe + Battery)**
 ![Wiring Diagram](additional_assets/WireDiagram_Client_Temp.jpg)
 The code uses the OneWire library supporting multiple DS18B20 on the GPIO data pin. However, multiple temperatures (e.g. ambient, beer, etc) are just mocked and not yet implemented.
 
 ### **Actual Device Setup**
+I am a fan of modular designs and flexibility in my projects. To connect sensors and/or probes or actuators requiring 3 or less wires, I am usually using servo connectors. This allows to easily remove and/or exchange sensors. For this project, I have quite a selection of thermometers (e.g. one without the heatshrink to add to my fermenters thermowell and one in a seperate thermowell for the brewing process) (see picture for reference)
+
+This is a picture of my personal setup. I created two stl files ([bottom]() & [top]()) which are downloadable at printables. They are made for the following components for you to have a battery powered 
 ![Device Picture](additional_asset/device_picture.png)
 
 ---
 
 ## 🔮 Upcoming Features
+- 🪫 **Battery Level Status** in MQTT Message
+- 🚨 **Status LEDs** for easy inspection.
 - 📦 **OTA updates** for seamless firmware upgrades.
 
 ---

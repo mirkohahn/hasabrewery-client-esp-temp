@@ -23,9 +23,9 @@
 #define MQTT_BROKER              "192.168.0.56"     // Replace with your broker IP/hostname
 #define MQTT_PORT                1883               // Default MQTT port; change if needed
 
-#define LOGIC_BREWERY_COMPONENT  "mash_tun"
+#define LOGIC_BREWERY_COMPONENT  "arduino"
 #define DEVICE_TYPE              "thermometer"
-#define DEVICE_ID                "6A38F5"           // Replace wit h your device ID; Reocmmended: Random 6-digit hex
+#define DEVICE_ID                "132456"           // Replace wit h your device ID; Reocmmended: Random 6-digit hex
 
 
 #endif
