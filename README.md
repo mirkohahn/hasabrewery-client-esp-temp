@@ -26,7 +26,7 @@ Now with integrated deep_sleep you can measure your fermentation's temperature f
 - ✅ **Battery optimization** to extend operational runtime.
 
 \
-Click here to install using the [Arduino IDE](#-installation---arduino-ide) and here for [VS Code & Platform IO](#-installation---vs-code--platform-io)
+Click here to install using the [Arduino IDE](#📦-22-installation---arduino-ide) and here for [VS Code & Platform IO](#📦-12-installation---vs-code--platform-io)
 
 The current build version for an ESP32 C3 has
 ````
@@ -35,11 +35,14 @@ Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
 ````
 
 ## Table of Contents
-- [Installation on VS Code & Platform IO](#-installation---vs-code--platform-io) | [Installation using Arduino IDE](#-installation---arduino-ide)
-- [Project Structure](#️project-structure)
-- [Wiring & Hardware](#configuration)
-- [Upcoming Features](#changelog) | [Contribution](#license) | [Support the Project](#license) | [License](#license)
-- [Has A Brewery EcoSystem](#license)
+- [Installation on VS Code & Platform IO](#📦-12-installation---vs-code--platform-io) | [Installation using Arduino IDE](#📦-22-installation---arduino-ide)
+- [Project Structure](#🖥️-project-structure)
+- [Wiring & Hardware](#🖼️-wiring--hardware)
+- [Upcoming Features](#🔮-upcoming-features) | [Contribution](#📖-contributing) | [Support the Project](#⭐-support-the-project) | [License](#-📜-license)
+- [Has A Brewery EcoSystem](#🌐-has-a-brewery-ecosystem)
+
+
+
 
 
 ## Changelog
