@@ -38,7 +38,7 @@ Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
 - [Installation on VS Code & Platform IO](#📦-12-installation---vs-code--platform-io) | [Installation using Arduino IDE](#📦-22-installation---arduino-ide)
 - [Project Structure](#🖥️-project-structure)
 - [Wiring & Hardware](#🖼️-wiring--hardware)
-- [Upcoming Features](#🔮-upcoming-features) | [Contribution](#📖-contributing) | [Support the Project](#⭐-support-the-project) | [License](#-📜-license)
+- [Upcoming Features](#🔮-upcoming-features) | [Contribution](#📖-contribution) | [Support the Project](#⭐-support-the-project) | [License](#-📜-license)
 - [Has A Brewery EcoSystem](#🌐-has-a-brewery-ecosystem)
 
 
@@ -180,7 +180,7 @@ This is a picture of my personal setup. I created two stl files ([bottom]() & [t
 
 ---
 
-## 📖 Contributing
+## 📖 Contribution
 We welcome contributions! To contribute:
 1. **Fork** the repository.
 2. Create a **feature branch**:
