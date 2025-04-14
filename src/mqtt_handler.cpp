@@ -4,6 +4,9 @@
 #include "config.h"
 #include "mqtt_handler.h"
 #include "temperature_sensor.h"
+#include "led.h"
+#include "battery_monitor.h"
+
 
 // Global WiFi and MQTT client
 WiFiClient espClient;
@@ -46,10 +49,15 @@ void setupTime() {
 void reconnect() {
     while (!client.connected()) {
         Serial.print("🔄 Attempting MQTT connection...");
+        led_blink("blue", 5, 200, 200);
         if (client.connect(DEVICE_ID)) {
             Serial.println("✅ Connected to MQTT broker.");
+            led_off("red");
+            led_on("blue");
         } else {
             Serial.print("❌ Connection failed, rc=");
+            led_on("red");
+            led_blink("blue", 5, 250, 250);
             Serial.print(client.state());
             Serial.println(" retrying in 5 seconds...");
             delay(5000);
@@ -65,6 +73,8 @@ void mqttInit() {
 // Maintain MQTT connection
 void mqttLoop() {
     if (!client.connected()) {
+        led_blink("red", 2, 200, 200);
+        led_blink("blue", 2, 200, 200);
         reconnect();
     }
     client.loop();
@@ -80,6 +90,9 @@ void publishTemperature(float brewTemp, float ambientTemp) {
     Serial.print("🚀 Sending Ambient Temp: ");
     Serial.println(ambientTemp);
 
+    float batteryLevel = get_battery_status();
+
+
     char topic[128];
     snprintf(topic, sizeof(topic), "receive/%s/%s/%s",
              LOGIC_BREWERY_COMPONENT, DEVICE_TYPE, DEVICE_ID);
@@ -90,19 +103,26 @@ void publishTemperature(float brewTemp, float ambientTemp) {
     // Construct JSON payload with "values" array
     char payload[512];  
     snprintf(payload, sizeof(payload),
-             "{\"timestamp\": \"%s\", \"values\": [{\"temp_ambient\": %s}, {\"temp_brew\": %s}], \"status\": {\"status_message\": \"%s\", \"transmission_type\": \"%s\", \"RSSI\": %d}}",
+             "{\"timestamp\": \"%s\", \"values\": [{\"temp_ambient\": %s}, {\"temp_brew\": %s}], \"status\": {\"status_message\": \"%s\", \"battery_level\": %s, \"transmission_type\": \"%s\", \"RSSI\": %d}}",
              timestamp.c_str(), 
              (ambientTemp == -127.00) ? "null" : String(ambientTemp, 2).c_str(),
              (brewTemp == -127.00) ? "null" : String(brewTemp, 2).c_str(),
-             "OK", TRANSMISSION_TYPE, wifiRSSI);
+             "OK", (batteryLevel < 0) ? "null" : String(batteryLevel, 1).c_str(),
+             TRANSMISSION_TYPE, wifiRSSI);
 
     Serial.print("📡 MQTT Payload: ");
     Serial.println(payload);
 
     if (client.publish(topic, payload)) {
         Serial.println("✅ MQTT Publish Success!");
+        led_off("blue");
+        led_blink("blue", 5, 100, 100);
+        led_on("blue");
     } else {
         Serial.println("❌ Failed to publish MQTT message.");
+        led_blink("red", 5, 100, 100);
+        led_blink("blue", 5, 100, 100);
+
     }
 }
 

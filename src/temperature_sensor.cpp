@@ -2,7 +2,8 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "temperature_sensor.h"
-#include "config.h"  // Include config.h for IMPERIAL_UNITS
+#include "config.h" 
+#include "led.h"
 
 // Define the GPIO pin for the DS18B20 sensor
 #define ONE_WIRE_BUS 4  
@@ -46,6 +47,8 @@ void setupTemperatureSensor() {
 
     if (totalSensors < 1) {
         Serial.println("❌ No DS18B20 sensor detected! Check wiring.");
+        led_on("red");
+        led_on("green");
         return;
     }
 
