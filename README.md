@@ -1,6 +1,6 @@
 # 🚀 HasABrewery ESP32 Client
 
-[![Version](https://img.shields.io/badge/version-1.1.0-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)]()
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  
 [![Platform](https://img.shields.io/badge/platform-ESP32-orange)](https://espressif.com/)\
 [![Platform](https://img.shields.io/badge/platform-Arduino_IDE-blue?logo=arduino)](https://www.arduino.cc/en/software)
@@ -48,6 +48,7 @@ Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
 ## Changelog
 | Version | Date       | Description               |
 |---------|------------|---------------------------|
+| 1.2.0   | 2025-04-15 | Added basic Over-the-Air updates, needs WiFi connection            |
 | 1.1.0   | 2025-04-13 | **🚨Status LED** support in Green, Red, Blue and **🪫 Battery Monitor** support via LED and MQTT, Updated config file, Preperation for CAN Bus (BeerCAN-Protocol), updated Time Zones for accurate local time stamps in messages|
 | 1.0.3   | 2025-02-27 | Added Arduino files; now flashable thru Arduino IDE            |
 | 1.0.2   | 2025-02-11 | Small bug fixes and updates       |
@@ -227,8 +228,9 @@ This is a picture of my personal setup. The current design and and models can be
 ---
 
 ## 🔮 Upcoming Features
+- 🖥️ **OTA monitoring** via telnet.
+- 📡 **OTAU automations** automatically scan for new updates and update in the background.
 - 🚎 **BeerCAN** Bus implementation for infinate wired scalability
-- 📦 **OTA updates** for seamless firmware upgrades.
 
 ---
 

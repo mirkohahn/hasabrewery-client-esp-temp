@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <ArduinoOTA.h>
+
 #include "main.h"
 #include <WiFi.h>
 #include "config.h"
@@ -16,10 +18,13 @@ RTC_DATA_ATTR int bootCount = 0; // Retains count across deep sleep cycles
 
 void connectToStrongestWiFi()
 {
+    String hostname = "ConnectedBrewery_" + String(DEVICE_ID);
+    WiFi.setHostname(hostname.c_str());
+
     Serial.println("🔍 Scanning for WiFi networks...");
     led_blink("green", 5, 250, 250);
     int numNetworks = WiFi.scanNetworks();
-    
+
     if (numNetworks == 0)
     {
         Serial.println("❌ No WiFi networks found!");
@@ -113,11 +118,11 @@ void setup()
 #endif
 
     led_on("green");
-    delay(1000);
+    delay(500);
     led_on("red");
-    delay(1000);
+    delay(500);
     led_on("blue");
-    delay(1000);
+    delay(500);
     leds_off();
 
 #if ENABLE_BATTERY_MONITOR
@@ -131,6 +136,10 @@ void setup()
 
     // Connect to the strongest available WiFi
     connectToStrongestWiFi();
+
+    // Enable OTA updates
+    ArduinoOTA.setHostname(WiFi.getHostname());
+    ArduinoOTA.begin();
 
     // Sync time using NTP
     setupTime();
@@ -146,6 +155,8 @@ unsigned long previousMillis = 0;
 
 void loop()
 {
+    // ArduinoOTA.handle();
+
     mqttLoop();
 
 #if ENABLE_LED
@@ -174,11 +185,19 @@ void loop()
 
         Serial.println("🛑 Waiting 2 seconds to ensure MQTT message is sent...");
         delay(2000); // Ensure MQTT message gets sent before sleepingt
-
+        Serial.println("🕓 Waiting 10s for OTA availability...");
+        unsigned long otaStart = millis();
+        while (millis() - otaStart < 10000)
+        {
+            led_blinking("blue");
+            ArduinoOTA.handle();
+            delay(10);
+            led_off("blue");
+        }
 
         // OPTIONAL - Deep Sleep disconnects all Power Consumers and reduces to ~50µA
-        // esp_sleep_enable_timer_wakeup(INTERVAL_LENGTH * 1000000ULL);
-        // esp_deep_sleep_start();
+        esp_sleep_enable_timer_wakeup(INTERVAL_LENGTH * 1000000ULL);
+        esp_deep_sleep_start();
 
         // If not using deep sleep, uncomment the following line to add some minor delay into the system as needed
         // delay(500); // Delay for 500 milli second before the next loop iteration
