@@ -30,8 +30,8 @@ Click here to install using the [Arduino IDE](#📦-22-installation---arduino-id
 
 The current build version for an ESP32 C3 has
 ````
-RAM:   [=         ]  14.1% (used 46296 bytes from 327680 bytes)
-Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
+RAM:   [=         ]  13.4% (used 43876 bytes from 327680 bytes)
+Flash: [======    ]  64.9% (used 850072 bytes from 1310720 bytes)
 ````
 
 ## Table of Contents
