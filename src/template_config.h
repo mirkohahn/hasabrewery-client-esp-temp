@@ -1,9 +1,12 @@
+// this is only a TEMPLATE FILE!
+// Copy/Rename this file to config.h and edit the values to match your local setup
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
 // Wireless Transmission Type
-#define FIRMWARE_VERSION         "1.1.0"     // Firmware version
-#define TRANSMISSION_TYPE        "wifi"     // TODO: Add support for BLE (and Zigbee?)
+#define FIRMWARE_VERSION         "1.1.0"    
+#define TRANSMISSION_TYPE        "wifi"     
 // Transmission Interval in Seconds
 #define INTERVAL_LENGTH          10         // Interval between transmissions in sec
 
@@ -13,18 +16,26 @@
 
 
 // <--- W I F I   C O N F I G U R A T I O N --->
-#define WIFI_SSID       "VM2214596"             // Replace with your SSID
-#define WIFI_PASSWORD   "iow9wQsey6Yodfdy"      // Replace with your WiFi password
+#define WIFI_SSID       "your-wifi-name"             // Replace with your SSID
+#define WIFI_PASSWORD   "your-wifi-password"      // Replace with your WiFi password
 
+
+// <--- D E E P   S L E E P   C O N F I G U R A T I O N --->
+#define SLEEP_TIMER       2500            // sleep for x ms; set to 0 to disable deep sleep
+
+
+// <--- U P D A T E   &   M O N I T O R I N G   C O N F I G U R A T I O N --->
+#define TELNET_PORT              23              // Telnet port for OTA updates
+#define INITIAL_DEV_TIME         120000         // Initial time to wait for OTA updates and host Telnet Server in ms
 
 
 // <--- M Q T T   S E T U P   &   S T R U C T U R E --->
-#define MQTT_BROKER              "192.168.0.57"     // Replace with your broker IP/hostname
+#define MQTT_BROKER              "192.168.0.xxx"     // Replace with your broker IP/hostname
 #define MQTT_PORT                1883               // Default MQTT port; change if needed
 
-#define LOGIC_BREWERY_COMPONENT  "mash_tun"
+#define LOGIC_BREWERY_COMPONENT  "all_in_one_unit"
 #define DEVICE_TYPE              "thermometer"
-#define DEVICE_ID                "6A38F5"           // Replace wit h your device ID; Reocmmended: Random 6-digit hex
+#define DEVICE_ID                "A1B2C3"           // Replace wit h your device ID; Reocmmended: Random 6-digit hex
 
 
 // ================================================================= 

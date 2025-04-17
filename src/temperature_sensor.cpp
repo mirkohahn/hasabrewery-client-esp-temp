@@ -4,6 +4,7 @@
 #include "temperature_sensor.h"
 #include "config.h" 
 #include "led.h"
+#include "main.h"
 
 // Define the GPIO pin for the DS18B20 sensor
 #define ONE_WIRE_BUS 4  
@@ -37,16 +38,16 @@ float convertTemperature(float tempC) {
 }
 
 void setupTemperatureSensor() {
-    Serial.println("🔍 Scanning for DS18B20 sensors...");
+    conbrew_logln("🔍 Scanning for DS18B20 sensors...");
 
     sensors.begin();
     totalSensors = sensors.getDeviceCount();
 
-    Serial.print("🔎 Found DS18B20 sensors: ");
-    Serial.println(totalSensors);
+    conbrew_log("🔎 Found DS18B20 sensors: ");
+    conbrew_logln(totalSensors);
 
     if (totalSensors < 1) {
-        Serial.println("❌ No DS18B20 sensor detected! Check wiring.");
+        conbrew_logln("❌ No DS18B20 sensor detected! Check wiring.");
         led_on("red");
         led_on("green");
         return;
@@ -55,21 +56,24 @@ void setupTemperatureSensor() {
     // Store and print all detected sensor addresses
     for (int i = 0; i < totalSensors; i++) {
         if (sensors.getAddress(detectedSensors[i], i)) {
-            Serial.print("✅ Found Sensor: ");
+            conbrew_log("✅ Found Sensor: ");
             for (uint8_t j = 0; j < 8; j++) {
-                Serial.print(detectedSensors[i][j], HEX);
-                Serial.print(" ");
+                char hexByte[4];
+                snprintf(hexByte, sizeof(hexByte), "%02X", detectedSensors[i][j]);
+                conbrew_log(hexByte);
+                conbrew_log(" ");
             }
+            
             Serial.println();
         } else {
-            Serial.println("⚠️ Failed to retrieve DS18B20 sensor address.");
+            conbrew_logln("⚠️ Failed to retrieve DS18B20 sensor address.");
         }
     }
 
     // Step 1: Assign Ambient Sensor **First**
     for (int i = 0; i < totalSensors; i++) {
         if (memcmp(detectedSensors[i], ambientSensorAddress, 7) == 0) { // Compare first 7 bytes
-            Serial.println("🌡️ Assigned as Ambient Temperature Sensor.");
+            conbrew_logln("🌡️ Assigned as Ambient Temperature Sensor.");
             memcpy(ambientSensor, detectedSensors[i], sizeof(DeviceAddress));
             ambientSensorAvailable = true;
         }
@@ -78,18 +82,18 @@ void setupTemperatureSensor() {
     // Step 2: Assign Brew Sensor (First Sensor That is Not Ambient)
     for (int i = 0; i < totalSensors; i++) {
         if (!brewSensorAvailable && memcmp(detectedSensors[i], ambientSensorAddress, 7) != 0) {
-            Serial.println("🍺 Assigned as Brew Temperature Sensor.");
+            conbrew_logln("🍺 Assigned as Brew Temperature Sensor.");
             memcpy(brewSensor, detectedSensors[i], sizeof(DeviceAddress));
             brewSensorAvailable = true;
         }
     }
 
     if (!ambientSensorAvailable) {
-        Serial.println("⚠️ No specific ambient sensor found. Ambient Temp will return null.");
+        conbrew_logln("⚠️ No specific ambient sensor found. Ambient Temp will return null.");
     }
 
     if (!brewSensorAvailable) {
-        Serial.println("⚠️ No specific brew sensor found. Brew Temp will return null.");
+        conbrew_logln("⚠️ No specific brew sensor found. Brew Temp will return null.");
     }
 }
 
@@ -100,7 +104,7 @@ bool isSensorConnected() {
 // Function to read brew temperature
 float readBrewTemperature() {
     if (!brewSensorAvailable) {
-        Serial.println("⚠️ No DS18B20 sensor detected for Brew Temp. Returning null.");
+        conbrew_logln("⚠️ No DS18B20 sensor detected for Brew Temp. Returning null.");
         return -127.00;
     }
 
@@ -108,7 +112,7 @@ float readBrewTemperature() {
     float temperature = sensors.getTempC(brewSensor);
 
     if (temperature == -127.00) {
-        Serial.println("⚠️ DS18B20 Brew Sensor Read Error: Retrying...");
+        conbrew_logln("⚠️ DS18B20 Brew Sensor Read Error: Retrying...");
         delay(500);
         sensors.requestTemperatures();
         temperature = sensors.getTempC(brewSensor);
@@ -120,7 +124,7 @@ float readBrewTemperature() {
 // Function to read ambient temperature
 float readAmbientTemperature() {
     if (!ambientSensorAvailable) {
-        Serial.println("⚠️ No DS18B20 sensor detected for Ambient Temp. Returning null.");
+        conbrew_logln("⚠️ No DS18B20 sensor detected for Ambient Temp. Returning null.");
         return -127.00;
     }
 
@@ -128,7 +132,7 @@ float readAmbientTemperature() {
     float temperature = sensors.getTempC(ambientSensor);
 
     if (temperature == -127.00) {
-        Serial.println("⚠️ DS18B20 Ambient Sensor Read Error: Retrying...");
+        conbrew_logln("⚠️ DS18B20 Ambient Sensor Read Error: Retrying...");
         delay(500);
         sensors.requestTemperatures();
         temperature = sensors.getTempC(ambientSensor);

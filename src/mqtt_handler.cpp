@@ -1,34 +1,37 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-#include <time.h>  
+#include <time.h>
 #include "config.h"
 #include "mqtt_handler.h"
 #include "temperature_sensor.h"
 #include "led.h"
 #include "battery_monitor.h"
-
+#include "main.h"
 
 // Global WiFi and MQTT client
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 // NTP time settings
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;              // ADJUST in SECONDS! for our timezone -> e.g. +1h for CET = 3600
-const int   daylightOffset_sec = 0;         // ADJUST in SECONDS! for our daylight saving time
+const char *ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 0;     // ADJUST in SECONDS! for our timezone -> e.g. +1h for CET = 3600
+const int daylightOffset_sec = 0; // ADJUST in SECONDS! for our daylight saving time
 
 // Function to get WiFi Signal Strength (RSSI)
-int getWiFiRSSI() {
-    return WiFi.RSSI();  // Returns signal strength in dBm
+int getWiFiRSSI()
+{
+    return WiFi.RSSI(); // Returns signal strength in dBm
     // -30 dBm: Amazing, -67 dBm: Very Good, -70 dBm: Okay, -80 dBm: Not Good, -90 dBm: Unusable
 }
 
 // Function to get formatted timestamp
-String getFormattedTimestamp() {
+String getFormattedTimestamp()
+{
     time_t now;
     struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) {
-        Serial.println("⚠️ Failed to obtain time. Using default 1970 timestamp.");
+    if (!getLocalTime(&timeinfo))
+    {
+        conbrew_logln("⚠️ Failed to obtain time. Using default 1970 timestamp.");
         return "1970-01-01 00:00:00";
     }
 
@@ -38,41 +41,50 @@ String getFormattedTimestamp() {
 }
 
 // Initialize NTP - Network Time Protocoll
-void setupTime() {
-    Serial.println("⏳ Syncing time via NTP...");
+void setupTime()
+{
+    conbrew_logln("⏳ Syncing time via NTP...");
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
     delay(2000);
-    Serial.println("✅ Time synchronized!");
+    conbrew_logln("✅ Time synchronized!");
 }
 
 // Function to handle MQTT reconnection
-void reconnect() {
-    while (!client.connected()) {
-        Serial.print("🔄 Attempting MQTT connection...");
+void reconnect()
+{
+    while (!client.connected())
+    {
+        conbrew_logln("🔄 Attempting MQTT connection...");
         led_blink("blue", 5, 200, 200);
-        if (client.connect(DEVICE_ID)) {
-            Serial.println("✅ Connected to MQTT broker.");
+        if (client.connect(DEVICE_ID))
+        {
+            conbrew_logln("✅ Connected to MQTT broker.");
             led_off("red");
             led_on("blue");
-        } else {
-            Serial.print("❌ Connection failed, rc=");
+        }
+        else
+        {
+            conbrew_log("❌ Connection failed, rc=");
             led_on("red");
             led_blink("blue", 5, 250, 250);
             Serial.print(client.state());
-            Serial.println(" retrying in 5 seconds...");
+            conbrew_logln(" retrying in 5 seconds...");
             delay(5000);
         }
     }
 }
 
 // Initialize MQTT
-void mqttInit() {
+void mqttInit()
+{
     client.setServer(MQTT_BROKER, MQTT_PORT);
 }
 
 // Maintain MQTT connection
-void mqttLoop() {
-    if (!client.connected()) {
+void mqttLoop()
+{
+    if (!client.connected())
+    {
         led_blink("red", 2, 200, 200);
         led_blink("blue", 2, 200, 200);
         reconnect();
@@ -81,51 +93,49 @@ void mqttLoop() {
 }
 
 // Publish temperature data to MQTT with enhanced status
-void publishTemperature(float brewTemp, float ambientTemp) {
-    Serial.println("🛠 DEBUG: Inside publishTemperature()");
-    
+void publishTemperature(float brewTemp, float ambientTemp)
+{
+    conbrew_logln("🛠 DEBUG: Inside publishTemperature()");
+
     Serial.print("🚀 Sending Brew Temp: ");
-    Serial.println(brewTemp);
+    conbrew_logln(brewTemp);
 
     Serial.print("🚀 Sending Ambient Temp: ");
-    Serial.println(ambientTemp);
+    conbrew_logln(ambientTemp);
 
     float batteryLevel = get_battery_status();
-
 
     char topic[128];
     snprintf(topic, sizeof(topic), "receive/%s/%s/%s",
              LOGIC_BREWERY_COMPONENT, DEVICE_TYPE, DEVICE_ID);
 
     String timestamp = getFormattedTimestamp();
-    int wifiRSSI = getWiFiRSSI();  
+    int wifiRSSI = getWiFiRSSI();
 
     // Construct JSON payload with "values" array
-    char payload[512];  
+    char payload[512];
     snprintf(payload, sizeof(payload),
              "{\"timestamp\": \"%s\", \"values\": [{\"temp_ambient\": %s}, {\"temp_brew\": %s}], \"status\": {\"status_message\": \"%s\", \"battery_level\": %s, \"transmission_type\": \"%s\", \"RSSI\": %d}}",
-             timestamp.c_str(), 
+             timestamp.c_str(),
              (ambientTemp == -127.00) ? "null" : String(ambientTemp, 2).c_str(),
              (brewTemp == -127.00) ? "null" : String(brewTemp, 2).c_str(),
              "OK", (batteryLevel < 0) ? "null" : String(batteryLevel, 1).c_str(),
              TRANSMISSION_TYPE, wifiRSSI);
 
-    Serial.print("📡 MQTT Payload: ");
-    Serial.println(payload);
+    conbrew_log("📡 MQTT Payload: ");
+    conbrew_logln(payload);
 
-    if (client.publish(topic, payload)) {
-        Serial.println("✅ MQTT Publish Success!");
+    if (client.publish(topic, payload))
+    {
+        conbrew_logln("✅ MQTT Publish Success!");
         led_off("blue");
         led_blink("blue", 5, 100, 100);
         led_on("blue");
-    } else {
-        Serial.println("❌ Failed to publish MQTT message.");
+    }
+    else
+    {
+        conbrew_logln("❌ Failed to publish MQTT message.");
         led_blink("red", 5, 100, 100);
         led_blink("blue", 5, 100, 100);
-
     }
 }
-
-
-
-

@@ -48,6 +48,7 @@ Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
 ## Changelog
 | Version | Date       | Description               |
 |---------|------------|---------------------------|
+| 1.2.1   | 2025-04-17 | Added remote/wireless logging via Telnet, improved OTAU            |
 | 1.2.0   | 2025-04-15 | Added basic Over-the-Air updates, needs WiFi connection            |
 | 1.1.0   | 2025-04-13 | **🚨Status LED** support in Green, Red, Blue and **🪫 Battery Monitor** support via LED and MQTT, Updated config file, Preperation for CAN Bus (BeerCAN-Protocol), updated Time Zones for accurate local time stamps in messages|
 | 1.0.3   | 2025-02-27 | Added Arduino files; now flashable thru Arduino IDE            |
@@ -69,7 +70,10 @@ Flash: [======    ]  59.9% (used 784701 bytes from 1310720 bytes)
   cd hasabrewery-client-esp-temp
   ```
 
-### **2️⃣ Configure WiFi & MQTT**
+- In **Arduino IDE**, go to `Tools > Board > esp32 > Your Board`
+- Click **Upload** to flash your device
+
+### **2️⃣ Wired and Wireless / Over-the-Air Updates**
 Copy/rename `src/template_config.h` to `src/config.h`. Then change it to meet your personal requirements and adjust it to your connection credentials and configurations. For example enter
   ```cpp
   #define WIFI_SSID "YourWiFiSSID"
@@ -121,10 +125,39 @@ Easily modify `src/config.h` to include your personal credentials and configurat
 
 and much more. You can choose and customize the topic under which the messages are send all from config.h
 
-### **4️⃣ Flash to ESP32**
-- select your board from `Tools` > `Board` > `eps32` > Select Your Board 
-- click **Upload**
+### **4️⃣ Flashing the ESP32 — Wired & Wireless (OTA Updates)**
 
+#### 🔌 Wired via USB
+You **must** flash the ESP32 via USB at least once. This initial upload sets up:
+- WiFi credentials
+- OTA update support via `ArduinoOTA`
+- Hostname/IP config
+
+Once that’s done, you can update your firmware wirelessly from that point on.
+
+#### 📶 Over-the-Air (OTA)
+After the first flash, OTA becomes available. Just ensure your device is:
+- Powered on  
+- Connected to the same network (WiFi) as your computer  
+- **Not** in deep sleep (see note below)
+
+⚠️ If you're flashing a brand-new ESP32, it won’t be connected to WiFi yet and cannot use OTA. Use USB for the first flash.
+
+Sleep Mode:
+When the ESP32 is in deep sleep mode, it's core goal is to save energy. Hence perioherials such as WiFi have been turned off. The code only allows wireless Telnet monitoring, as well as OTA updates in the first 180 seconds (by default, can be changed in config.h). During that time the ESP32 wont sleep, it will host & log all serial output to the wireless Telnet server and wait for OTA updates. After that it goes into normal ops mode, disables power hungry components and allows deep sleep.
+
+### ⚙️ `platformio.ini` Example
+
+If you're using **PlatformIO**, configure your `platformio.ini` like this:
+
+```ini
+; For initial USB upload (wired)
+; upload_port = /dev/cu.usbmodem21301  ; adjust to match your port
+
+; For OTA updates
+upload_protocol = espota
+upload_port = 192.168.0.110           ; use your ESP32's actual IP address
+```
 ---
 
 ## 🛠 Usage
@@ -132,6 +165,12 @@ and much more. You can choose and customize the topic under which the messages a
 2. The system **scans and connects to the strongest WiFi AP**.
 3. Temperature data is **published via MQTT**.
 4. Use an MQTT client like **MQTT Explorer** to monitor the data.
+
+### Remote Monitoring & Debugging via Telnet
+The ESP32 hosts a Telnet server that you can easily connect to, so you are able to read the print commands without a serial connection. I designed two templates that work very similar to print() and println(), simply call conbrew_log() or conbrew_logln().
+From another device (in the same network), on MacOS call `nc <ESP_IP_ADDRESS> <TELNET_PORT>` (e.g. `nc 192.168.0.110 23`) or on some OS `telnet <ESP_IP_ADDRESS> <TELNET_PORT>`.
+
+FYI: you might have to install Telnet on your Mac with `brew install telnet`. 
 
 ---
 
@@ -194,16 +233,16 @@ A circle 🔴🔵🟢 indicates that an LED is constantly on. A square 🟥 🟦
 Here's a general overview of common LED patterns and their respective meaning
 | Green    |Blue   |Red   |Meaning |
 |----------|----------|------|-------|
-|0|0|0| Device Off, or Deep Sleep|
-|5x 🟩|0|0| Scanning for WiFi networks |
-|3x 🟩|0|0| (new) WiFi / Access Point connected |
-|0|0|🔴| No WiFi Network Found; no WiFi Connection|
-|🟢|0|10x 🟥| WiFi Connection Failed |
-|0|0|🟥| Known Network not found; Couldnt Connect |
-|🟢|🔵|0| Connected to MQTT |
-|🟢|5x 🟦|| MQTT Message Published |
-|0|5x 🟦|🔴| Connection Failed |
-|0|🔵|5x 🟥| MQTT Publish Failed |
+|⚪️| ⚪️ |⚪️| Device Off, or Deep Sleep|
+|5x 🟩|⚪️|⚪️| Scanning for WiFi networks |
+|3x 🟩|⚪️|⚪️| (new) WiFi / Access Point connected |
+|⚪️|⚪️|🔴| No WiFi Network Found; no WiFi Connection|
+|🟢|⚪️|10x 🟥| WiFi Connection Failed |
+|⚪️|⚪️|🟥| Known Network not found; Couldnt Connect |
+|🟢|🔵|⚪️| Connected to MQTT |
+|🟢|5x 🟦|⚪️| MQTT Message Published |
+|⚪️|5x 🟦|🔴| Connection Failed |
+|⚪️|🔵|5x 🟥| MQTT Publish Failed |
 
 
 
@@ -228,7 +267,6 @@ This is a picture of my personal setup. The current design and and models can be
 ---
 
 ## 🔮 Upcoming Features
-- 🖥️ **OTA monitoring** via telnet.
 - 📡 **OTAU automations** automatically scan for new updates and update in the background.
 - 🚎 **BeerCAN** Bus implementation for infinate wired scalability
 

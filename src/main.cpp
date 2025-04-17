@@ -10,11 +10,11 @@
 #include "battery_monitor.h"
 #include "esp_sleep.h"
 
-// FYI: Serial.println are for debugging purposes, and can be removed if not needed
-// prints shouldnt effect the battery efficiency too much / noticable
-// can be used, when connection / flashing thru VSC / PlatformIO and monitoring the serial monitor
 
 RTC_DATA_ATTR int bootCount = 0; // Retains count across deep sleep cycles
+
+WiFiServer telnetServer(23);
+WiFiClient telnetClient;
 
 void connectToStrongestWiFi()
 {
@@ -107,8 +107,12 @@ void connectToStrongestWiFi()
     }
 }
 
+
 void setup()
 {
+
+    Serial.begin(115200);
+    delay(100);
 
     // Enabling Optional Features
 #if ENABLE_LED
@@ -129,17 +133,16 @@ void setup()
     setupBatteryMonitor();
 #endif
 
-    // Setup for Critical Features
-
-    Serial.begin(115200);
-    delay(100);
-
     // Connect to the strongest available WiFi
     connectToStrongestWiFi();
 
     // Enable OTA updates
     ArduinoOTA.setHostname(WiFi.getHostname());
     ArduinoOTA.begin();
+
+    // Start Telnet server
+    telnetServer.begin();
+    telnetServer.setNoDelay(true);
 
     // Sync time using NTP
     setupTime();
@@ -151,11 +154,43 @@ void setup()
     setupTemperatureSensor();
 }
 
+RTC_DATA_ATTR bool in_dev_time = true;
 unsigned long previousMillis = 0;
 
 void loop()
 {
-    // ArduinoOTA.handle();
+    unsigned long currentMillis = millis();
+
+    // Disable OTA/Telnet after INITIAL_DEV_TIME
+    if (in_dev_time && currentMillis > INITIAL_DEV_TIME)
+    {
+        in_dev_time = false;
+        leds_off();
+        conbrew_logln("⏹️ DEV mode expired");
+
+        telnetClient.stop();
+        telnetServer.close();
+        WiFi.disconnect(true);
+    }
+
+    // Accept Telnet client (only during dev window)
+    if (in_dev_time && telnetServer.hasClient())
+    {
+        if (!telnetClient || !telnetClient.connected())
+        {
+            telnetClient = telnetServer.available();
+        }
+        else
+        {
+            WiFiClient rejectClient = telnetServer.available();
+            rejectClient.stop();
+        }
+    }
+
+    if (in_dev_time)
+    {
+        ArduinoOTA.handle();
+    }
 
     mqttLoop();
 
@@ -163,43 +198,36 @@ void loop()
     led_loop();
 #endif
 
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= 1 * 1000UL)
+    if (currentMillis - previousMillis >= 1000)
     {
         previousMillis = currentMillis;
 
-        // Read temperatures
         float brewTemp = readBrewTemperature();
         float ambientTemp = readAmbientTemperature();
 
-        Serial.print("📡 Brew Temperature: ");
-        Serial.print(brewTemp);
-        Serial.println(" °C"); // Print Brew Temp for Debugging Purposes - Hence not using IMPERIAL_UNITS
+        conbrew_log("📡 Brew Temperature: ");
+        conbrew_log(String(brewTemp, 2));
+        conbrew_logln(" °C");
 
-        Serial.print("📡 Ambient Temperature: ");
-        Serial.print(ambientTemp);
-        Serial.println(" °C"); // Print Ambient Temp for Debugging Purposes - Hence not using IMPERIAL_UNITS
+        conbrew_log("📡 Ambient Temperature: ");
+        conbrew_log(String(ambientTemp, 2));
+        conbrew_logln(" °C");
 
-        // Publish both temperatures
         publishTemperature(brewTemp, ambientTemp);
 
-        Serial.println("🛑 Waiting 2 seconds to ensure MQTT message is sent...");
-        delay(2000); // Ensure MQTT message gets sent before sleepingt
-        Serial.println("🕓 Waiting 10s for OTA availability...");
-        unsigned long otaStart = millis();
-        while (millis() - otaStart < 10000)
+        conbrew_logln("🛑 Waiting 2 seconds to ensure MQTT message is sent...");
+        delay(2000);
+
+        if (!in_dev_time && SLEEP_TIMER > 0)
         {
-            led_blinking("blue");
-            ArduinoOTA.handle();
-            delay(10);
-            led_off("blue");
+            Serial.println("💤 Going to sleep...");
+            leds_off();
+            esp_sleep_enable_timer_wakeup(SLEEP_TIMER * 1000ULL);
+            esp_deep_sleep_start();
         }
-
-        // OPTIONAL - Deep Sleep disconnects all Power Consumers and reduces to ~50µA
-        esp_sleep_enable_timer_wakeup(INTERVAL_LENGTH * 1000000ULL);
-        esp_deep_sleep_start();
-
-        // If not using deep sleep, uncomment the following line to add some minor delay into the system as needed
-        // delay(500); // Delay for 500 milli second before the next loop iteration
+        else
+        {
+            delay(2000); // Keep for debug cycles when sleep is off
+        }
     }
 }
