@@ -5,7 +5,7 @@
 #define CONFIG_H
 
 // Wireless Transmission Type
-#define FIRMWARE_VERSION         "1.1.0"    
+#define FIRMWARE_VERSION         "1.1.1"    
 #define TRANSMISSION_TYPE        "wifi"     
 // Transmission Interval in Seconds
 #define INTERVAL_LENGTH          10         // Interval between transmissions in sec
